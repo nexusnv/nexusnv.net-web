@@ -36,7 +36,7 @@ const navLinks: NavLink[] = [
 
 const stats: Stat[] = [
   { value: "10+", label: "Projects" },
-  { value: "5+", label: "Repositories" },
+  { value: "300+", label: "Repositories" },
   { value: "1", label: "Organization" },
 ];
 
