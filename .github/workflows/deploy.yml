@@ -1,0 +1,64 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build application
+        run: npm run build
+
+  deploy:
+    name: Deploy via Cloudflared SSH
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to remote server via Cloudflared SSH
+        uses: and-fm/cloudflared-ssh-action@v3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
+          private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
+          port: ${{ secrets.SSH_PORT }}
+          service_token_id: ${{ secrets.SERVICE_TOKEN_ID }}
+          service_token_secret: ${{ secrets.SERVICE_TOKEN_SECRET }}
+          commands: |
+            set -e
+            mkdir -p "${{ secrets.REMOTE_APP_PATH }}"
+            cd "${{ secrets.REMOTE_APP_PATH }}"
+            if [ ! -d .git ]; then
+              git clone https://github.com/${{ github.repository }} .
+            fi
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            docker build -t "${{ secrets.CONTAINER_NAME }}" .
+            docker rm -f "${{ secrets.CONTAINER_NAME }}" || true
+            docker run -d --name "${{ secrets.CONTAINER_NAME }}" -p 3000:3000 -e PORT=3000 --restart always "${{ secrets.CONTAINER_NAME }}"
