@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NexusNV",
+  title: "NexusNV | Data, ERP, Automation, and Platform Systems",
   description:
-    "Placeholder website for NexusNV, a GitHub organization owned by Azahari Zaman.",
+    "NexusNV is a Malaysia-based company and builder ecosystem for data pipelines, ERP systems, automation, IoT infrastructure, and platform engineering.",
 };
 
 export default function RootLayout({
