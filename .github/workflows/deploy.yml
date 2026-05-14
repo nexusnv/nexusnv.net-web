@@ -58,4 +58,4 @@ jobs:
             git reset --hard origin/main
             docker build -t "${{ secrets.CONTAINER_NAME }}" .
             docker rm -f "${{ secrets.CONTAINER_NAME }}" || true
-            docker run -d --name "${{ secrets.CONTAINER_NAME }}" -p 127.0.0.1:51472:3000 -e PORT=3000 --restart always "${{ secrets.CONTAINER_NAME }}"
+            docker run -d --name "${{ secrets.CONTAINER_NAME }}" -p 3000:3000 -e PORT=3000 --restart always "${{ secrets.CONTAINER_NAME }}"
