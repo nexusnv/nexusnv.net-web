@@ -63,6 +63,6 @@ jobs:
               --network proxy \
               --label traefik.enable=true \
               --label traefik.docker.network=proxy \
-              --label "traefik.http.routers."${{ secrets.CONTAINER_NAME }}".rule=Host(`www.nexusnv.net`)" \
+              --label "traefik.http.routers."${{ secrets.CONTAINER_NAME }}".rule=Host(\`www.nexusnv.net\`)" \
               --label "traefik.http.services."${{ secrets.CONTAINER_NAME }}".loadbalancer.server.port=3000" \
               "${{ secrets.CONTAINER_NAME }}"
